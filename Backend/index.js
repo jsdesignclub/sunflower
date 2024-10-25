@@ -1,21 +1,25 @@
+
+require('dotenv').config();  // Load environment variables from .env (only for local development)
+
 const express = require('express');
 const mysql = require('mysql2');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 
 const app = express();
-const port = 5000;  // Set this as your backend port
+const port = process.env.PORT || 5000;  // Use the environment's PORT if available
 
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
 
-// MySQL connection
+// MySQL connection using environment variables
 const db = mysql.createConnection({
-    host: '185.212.70.52',  // Change this if you're using a remote DB
-    user: 'u762209995_jaya',       // Your MySQL username
-    password: 'Pm19750211@',       // Your MySQL password
-    database: 'u762209995_pos'  // The name of your database
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+    port: process.env.DB_PORT || 3306,
 });
 
 db.connect((err) => {
