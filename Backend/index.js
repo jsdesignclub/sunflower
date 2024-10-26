@@ -55,7 +55,7 @@ app.post('/api/items', (req, res) => {
 // Route to get all product categories
 app.get('/api/productcategories', (req, res) => {
     const query = 'SELECT * FROM productcategories';
-    db.query(query, (err, result) => {
+     pool.query(query, (err, result) => {
         if (err) {
             return res.status(500).json({ message: 'Error fetching product categories', error: err.message });
         }
