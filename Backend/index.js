@@ -29,7 +29,14 @@ db.connect((err) => {
     }
     console.log('Connected to MySQL!');
 });
-
+// Get user
+app.get('/api/user', (req, res) => {
+    const sql = 'SELECT * FROM users';
+    db.query(sql, (err, result) => {
+        if (err) throw err;
+        res.send(result);
+    });
+});
 // Get items data
 app.get('/api/items', (req, res) => {
     const sql = 'SELECT * FROM items';
