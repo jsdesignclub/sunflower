@@ -31,7 +31,7 @@ db.connect((err) => {
 });
 // Get user
 app.get('/api/user', (req, res) => {
-    const sql = 'SELECT * FROM users';
+    const sql = 'SELECT * FROM user';
     db.query(sql, (err, result) => {
         if (err) throw err;
         res.send(result);
