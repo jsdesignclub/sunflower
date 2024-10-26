@@ -70,7 +70,7 @@ app.get('/api/products', (req, res) => {
         JOIN productcategories pc ON p.productCategoryId = pc.id
     `;
 
-    db.query(query, (err, result) => {
+     pool.query(query, (err, result) => {
         if (err) {
             return res.status(500).json({ message: 'Error fetching products', error: err.message });
         }
