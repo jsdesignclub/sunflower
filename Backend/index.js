@@ -199,7 +199,7 @@ app.delete('/api/vehicles/:id', (req, res) => {
 
     const sql = 'DELETE FROM vehicles WHERE id = ?';
 
-    db.query(sql, [id], (err, result) => {
+    pool.query(sql, [id], (err, result) => {
         if (err) {
             return res.status(500).json({ message: 'Error deleting vehicle', error: err.message });
         }
@@ -212,7 +212,7 @@ app.post('/api/roots', (req, res) => {
 
     const sql = 'INSERT INTO roots (name, createdAt, updatedAt) VALUES (?, NOW(), NOW())';
 
-    db.query(sql, [name], (err, result) => {
+    pool.query(sql, [name], (err, result) => {
         if (err) {
             return res.status(500).json({ message: 'Error adding root', error: err.message });
         }
@@ -223,7 +223,7 @@ app.post('/api/roots', (req, res) => {
 // Get all roots
 app.get('/api/roots', (req, res) => {
     const sql = 'SELECT * FROM roots';
-    db.query(sql, (err, result) => {
+    pool.query(sql, (err, result) => {
         if (err) throw err;
         res.send(result);
     });
@@ -234,7 +234,7 @@ app.delete('/api/roots/:id', (req, res) => {
     const { id } = req.params;
     const sql = 'DELETE FROM roots WHERE id = ?';
 
-    db.query(sql, [id], (err, result) => {
+    pool.query(sql, [id], (err, result) => {
         if (err) {
             return res.status(500).json({ message: 'Error deleting root', error: err.message });
         }
@@ -249,7 +249,7 @@ app.put('/api/roots/:id', (req, res) => {
 
     const sql = 'UPDATE roots SET name = ?, updatedAt = NOW() WHERE id = ?';
 
-    db.query(sql, [name, id], (err, result) => {
+    pool.query(sql, [name, id], (err, result) => {
         if (err) {
             return res.status(500).json({ message: 'Error updating root', error: err.message });
         }
@@ -261,7 +261,7 @@ app.post('/api/customers', (req, res) => {
     const { name, address, whatsappNumber, birthday, rootId } = req.body;
     const sql = `INSERT INTO customers (name, address, whatsappNumber, birthday, rootId, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, NOW(), NOW())`;
 
-    db.query(sql, [name, address, whatsappNumber, birthday, rootId], (err, result) => {
+    pool.query(sql, [name, address, whatsappNumber, birthday, rootId], (err, result) => {
         if (err) {
             return res.status(500).json({ message: 'Error adding customer', error: err.message });
         }
@@ -275,7 +275,7 @@ app.get('/api/customers', (req, res) => {
                  FROM customers
                  LEFT JOIN roots ON customers.rootId = roots.id`;
 
-    db.query(sql, (err, result) => {
+    pool.query(sql, (err, result) => {
         if (err) throw err;
         res.send(result);
     });
@@ -286,7 +286,7 @@ app.delete('/api/customers/:id', (req, res) => {
     const { id } = req.params;
     const sql = 'DELETE FROM customers WHERE id = ?';
 
-    db.query(sql, [id], (err, result) => {
+    pool.query(sql, [id], (err, result) => {
         if (err) {
             return res.status(500).json({ message: 'Error deleting customer' });
         }
@@ -304,7 +304,7 @@ app.put('/api/customers/:id', (req, res) => {
         WHERE id = ?
     `;
 
-    db.query(sql, [name, address, whatsappNumber, birthday, rootId, id], (err, result) => {
+    pool.query(sql, [name, address, whatsappNumber, birthday, rootId, id], (err, result) => {
         if (err) {
             return res.status(500).json({ message: 'Error updating customer', error: err.message });
         }
@@ -320,7 +320,7 @@ app.post('/api/dailysalesplanningss', (req, res) => {
         VALUES (?, ?, ?, ?, NOW(), NOW())
     `;
 
-    db.query(sql, [date, salesRepId, vehicleId, rootId], (err, result) => {
+    pool.query(sql, [date, salesRepId, vehicleId, rootId], (err, result) => {
         if (err) {
             return res.status(500).json({ message: 'Error inserting daily sales plan', error: err.message });
         }
@@ -336,7 +336,7 @@ app.get('/api/dailysalesplanningss', (req, res) => {
         JOIN roots r ON d.rootId = r.id
         ORDER BY d.date DESC
     `;
-    db.query(sql, (err, results) => {
+    pool.query(sql, (err, results) => {
         if (err) {
             return res.status(500).json({ message: 'Error fetching sales plans', error: err.message });
         }
@@ -349,7 +349,7 @@ app.delete('/api/dailysalesplanningss/:id', (req, res) => {
 
     const sql = `DELETE FROM dailysalesplanningss WHERE id = ?`;
 
-    db.query(sql, [id], (err, result) => {
+    pool.query(sql, [id], (err, result) => {
         if (err) {
             return res.status(500).json({ message: 'Error deleting sales plan', error: err.message });
         }
@@ -379,7 +379,7 @@ app.post('/api/invoices', (req, res) => {
         VALUES (?, ?, ?, NOW(), NOW())
     `;
     console.log(dailySalesPlanningId);
-    db.query(query, [dailySalesPlanningId, date, totalAmount], (err, result) => {
+    pool.query(query, [dailySalesPlanningId, date, totalAmount], (err, result) => {
         if (err) {
             return res.status(500).json({ error: err.message });
         }
@@ -394,7 +394,7 @@ app.post('/api/salestransactions', (req, res) => {
     console.log(productId);
 
     // Start a transaction
-    db.beginTransaction((err) => {
+    pool.beginTransaction((err) => {
         if (err) {
             return res.status(500).json({ message: 'Transaction error', error: err.message });
         }
@@ -403,7 +403,7 @@ app.post('/api/salestransactions', (req, res) => {
         const insertTransactionSql = `INSERT INTO sales_transactions (productId, quantity, price, totalAmount, invoiceId, createdAt, updatedAt, freeIssue) 
                                       VALUES (?, ?, ?, ?, ?, NOW(), NOW(), ?)`;
 
-        db.query(insertTransactionSql, [productId, quantity, price, totalAmount, invoiceId, freeIssue], (err, result) => {
+       pool.query(insertTransactionSql, [productId, quantity, price, totalAmount, invoiceId, freeIssue], (err, result) => {
             if (err) {
                 return db.rollback(() => {
                     res.status(500).json({ message: 'Error adding product to invoice', error: err.message });
@@ -415,7 +415,7 @@ app.post('/api/salestransactions', (req, res) => {
             console.log(newTransactionId);
 
             // Commit the transaction after successful insertion
-            db.commit((err) => {
+            pool.commit((err) => {
                 if (err) {
                     return db.rollback(() => {
                         res.status(500).json({ message: 'Transaction commit error', error: err.message });
@@ -439,7 +439,7 @@ app.put('/api/invoices/:invoiceId', (req, res) => {
     // Get the current total amount of the invoice
     const getInvoiceTotalQuery = `SELECT totalAmount FROM invoices WHERE id = ?`;
 
-    db.query(getInvoiceTotalQuery, [invoiceId], (err, result) => {
+    pool.query(getInvoiceTotalQuery, [invoiceId], (err, result) => {
         if (err || result.length === 0) {
             return res.status(500).json({ message: 'Error retrieving invoice', error: err?.message || 'Invoice not found' });
         }
@@ -450,7 +450,7 @@ app.put('/api/invoices/:invoiceId', (req, res) => {
         const updatedTotal = currentTotal + totalAmount;
         const updateInvoiceTotalQuery = `UPDATE invoices SET totalAmount = ?, updatedAt = NOW() WHERE id = ?`;
 
-        db.query(updateInvoiceTotalQuery, [updatedTotal, invoiceId], (err, result) => {
+        pool.query(updateInvoiceTotalQuery, [updatedTotal, invoiceId], (err, result) => {
             if (err) {
                 return res.status(500).json({ message: 'Error updating invoice total amount', error: err.message });
             }
@@ -476,7 +476,7 @@ console.log(totalAmount);
     `;
 
     // Update the total amount in the invoice table
-    db.query(query, [totalAmount, id], (err, result) => {
+   pool.query(query, [totalAmount, id], (err, result) => {
         if (err) {
             console.error('Error updating invoice total amount:', err); // Log the error
             return res.status(500).json({ message: 'Error updating invoice', error: err.message });
