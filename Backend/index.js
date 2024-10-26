@@ -77,7 +77,7 @@ app.post('/api/products', (req, res) => {
 
     const query = `INSERT INTO products (name, price, discount, quantity, productCategoryId) VALUES (?, ?, ?, ?, ?)`;
 
-    db.query(query, [name, price, discount, quantity, productCategoryId], (err, result) => {
+    pool.query(query, [name, price, discount, quantity, productCategoryId], (err, result) => {
         if (err) {
             return res.status(500).json({ message: 'Error inserting product', error: err.message });
         }
@@ -95,7 +95,7 @@ app.post('/api/salesreps', (req, res) => {
     `;
 
     // Execute query
-    db.query(sql, [name, address, phoneNumber, experienceLevel], (err, result) => {
+    pool.query(sql, [name, address, phoneNumber, experienceLevel], (err, result) => {
         if (err) {
             return res.status(500).json({ message: 'Error inserting salesrep', error: err.message });
         }
@@ -107,7 +107,7 @@ app.post('/api/salesreps', (req, res) => {
 app.get('/api/salesreps', (req, res) => {
     const sql = 'SELECT * FROM salesreps ORDER BY createdAt DESC';
 
-    db.query(sql, (err, result) => {
+    pool.query(sql, (err, result) => {
         if (err) {
             return res.status(500).json({ message: 'Error fetching salesreps', error: err.message });
         }
@@ -126,7 +126,7 @@ app.put('/api/salesreps/:id', (req, res) => {
         WHERE id = ?
     `;
 
-    db.query(sql, [name, address, phoneNumber, experienceLevel, id], (err, result) => {
+    pool.query(sql, [name, address, phoneNumber, experienceLevel, id], (err, result) => {
         if (err) {
             return res.status(500).json({ message: 'Error updating salesrep', error: err.message });
         }
@@ -140,7 +140,7 @@ app.delete('/api/salesreps/:id', (req, res) => {
 
     const sql = 'DELETE FROM salesreps WHERE id = ?';
 
-    db.query(sql, [id], (err, result) => {
+   pool.query(sql, [id], (err, result) => {
         if (err) {
             return res.status(500).json({ message: 'Error deleting salesrep', error: err.message });
         }
@@ -159,7 +159,7 @@ app.post('/api/vehicles', (req, res) => {
     `;
 
     // Execute query
-    db.query(sql, [vehicleNumber, vehicleName], (err, result) => {
+    pool.query(sql, [vehicleNumber, vehicleName], (err, result) => {
         if (err) {
             return res.status(500).json({ message: 'Error inserting vehicle', error: err.message });
         }
@@ -170,7 +170,7 @@ app.post('/api/vehicles', (req, res) => {
 // Get all vehicles
 app.get('/api/vehicles', (req, res) => {
     const sql = 'SELECT * FROM vehicles';
-    db.query(sql, (err, result) => {
+    pool.query(sql, (err, result) => {
         if (err) {
             return res.status(500).json({ message: 'Error fetching vehicles', error: err.message });
         }
@@ -185,7 +185,7 @@ app.put('/api/vehicles/:id', (req, res) => {
 
     const sql = 'UPDATE vehicles SET vehicleNumber = ?, vehicleName = ?, updatedAt = NOW() WHERE id = ?';
 
-    db.query(sql, [vehicleNumber, vehicleName, id], (err, result) => {
+    pool.query(sql, [vehicleNumber, vehicleName, id], (err, result) => {
         if (err) {
             return res.status(500).json({ message: 'Error updating vehicle', error: err.message });
         }
